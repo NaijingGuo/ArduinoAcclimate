@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <CapacitiveSensor.h>
+#include <elapsedMillis.h>
+
+elapsedMillis timeElapsed;
 
 CapacitiveSensor cs = CapacitiveSensor(4, 2);
 
@@ -7,14 +10,11 @@ CapacitiveSensor cs = CapacitiveSensor(4, 2);
 #define GREEN 5
 #define RED 6
 
-char color; // used in switch
-
 void pink()
 {
   analogWrite(RED, 30);
   analogWrite(BLUE, 25);
   analogWrite(GREEN, 0);
-  color = 'pink';
 }
 
 void blue()
@@ -22,7 +22,6 @@ void blue()
   analogWrite(RED, 10);
   analogWrite(BLUE, 35);
   analogWrite(GREEN, 40);
-  color = 'blue';
 }
 
 void yellow()
@@ -30,7 +29,6 @@ void yellow()
   analogWrite(RED, 50);
   analogWrite(BLUE, 10);
   analogWrite(GREEN, 50);
-  color = 'yellow';
 }
 
 void off()
@@ -47,7 +45,7 @@ void setup()
   pinMode(BLUE, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode(RED, OUTPUT);
-  blue();
+  yellow();
 }
 
 void loop()
@@ -59,11 +57,11 @@ void loop()
 
   if (sensorValue > threshold)
   {
+    blue();
+    timeElapsed = 0;
+  }
+  if (timeElapsed > 10000) // this is 10s
+  {
     pink();
   }
-  else
-  {
-    blue();
-  }
-  delay(10);
 }
