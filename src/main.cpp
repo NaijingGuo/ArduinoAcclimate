@@ -40,13 +40,16 @@ void off()
 }
 
 //
-
 int speakerPin = 9;
-
-int length = 15; // the number of notes
+int length = 15;
+int pinSwitch = 8;
+int time = 5000;
+boolean oldSwitchState = LOW;
+boolean newSwitchState = LOW;
+boolean buzzerState = LOW;
 
 //twinkle twinkle little star
-char notes[] = "ccggaag ffeeddc ggffeed ggffeed ccggaag ffeeddc "; // a space represents a rest
+char notes[] = "ccggaag ffeeddc ggffeed ggffeed ccggaag ffeeddc ";
 int beats[] = {1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 4};
 int tempo = 300;
 
@@ -66,7 +69,6 @@ void playNote(char note, int duration)
   char names[] = {'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C'};
   int tones[] = {1915, 1700, 1519, 1432, 1275, 1136, 1014, 956};
 
-  // play the tone corresponding to the note name
   for (int i = 0; i < 8; i++)
   {
     if (names[i] == note)
@@ -84,14 +86,12 @@ void song()
   {
     if (notes[i] == ' ')
     {
-      delay(beats[i] * tempo); // rest
+      delay(beats[i] * tempo);
     }
     else
     {
       playNote(notes[i], beats[i] * tempo);
     }
-
-    // pause between notes
     delay(tempo / 2);
   }
 }
@@ -105,26 +105,45 @@ void setup()
   pinMode(RED, OUTPUT);
   pinMode(buzzer, OUTPUT);
   yellow();
+  pinMode(pinSwitch, INPUT);
 }
 
 void loop()
 {
 
-  int threshold = 100;
+  int threshold = 50;
   long sensorValue = cs.capacitiveSensor(30);
   Serial.print(sensorValue);
+  newSwitchState = digitalRead(pinSwitch);
+
+  // switch
+  if (newSwitchState != oldSwitchState)
+  {
+    if (newSwitchState == HIGH)
+    {
+      if (buzzerState == LOW)
+      {
+        buzzerState = HIGH;
+      }
+      else
+      {
+        buzzerState = LOW;
+      }
+    }
+    oldSwitchState = newSwitchState;
+  }
 
   if (sensorValue > threshold)
   {
     blue();
     timeElapsed = 0;
   }
-  if (timeElapsed > 10000) // this is 10s
+  if (timeElapsed > time) // this is 5s
   {
     pink();
-    if (timeElapsed < 12000)
+    if (timeElapsed < (time+5) && buzzerState == HIGH)
     {
       song();
     }
-    }
+  }
 }
