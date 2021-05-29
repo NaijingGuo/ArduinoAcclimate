@@ -78,7 +78,19 @@ void playNote(char note, int duration)
   }
 }
 
-//
+void on()
+{
+  playNote('c',150);
+  playNote('d',150);
+  playNote('e',150);
+}
+
+void switchoff()
+{
+  playNote('e',150);
+  playNote('d',150);
+  playNote('c',150);
+}
 
 void song()
 {
@@ -124,10 +136,12 @@ void loop()
       if (buzzerState == LOW)
       {
         buzzerState = HIGH;
+        on();
       }
       else
       {
         buzzerState = LOW;
+        switchoff();
       }
     }
     oldSwitchState = newSwitchState;
